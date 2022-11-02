@@ -64,7 +64,7 @@ parso==0.8.3
 patsy==0.5.2
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==6.2.1
+Pillow==9.0.1
 pipreqs==0.4.11
 pluggy==1.0.0
 prometheus-client==0.14.1
