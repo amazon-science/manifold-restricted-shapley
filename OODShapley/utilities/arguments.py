@@ -9,7 +9,7 @@ def str2bool(v):
 
 def set_args():
     parser = argparse.ArgumentParser(description="Parser for Shapley Calculations")
-    parser.add_argument("--gt_model", type=str, default="sum", help="GT model to be used")
+    parser.add_argument("--gt_model", type=str, default="x_1", help="GT model to be used")
     parser.add_argument("--data_generator", type=str, default="equal_components", help="Data Generator to be used")
     parser.add_argument("--n_train", type=int, default=500, help="Number of training points for training model and VAE")
     parser.add_argument("--n_test", type=int, default=200, help="Number of test points to evaluate models")
