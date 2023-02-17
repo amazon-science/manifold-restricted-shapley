@@ -137,3 +137,50 @@ class ManifoldShap(SamplingExplainer):
         d = evals_on - evals_off
 
         return np.mean(d, 0), np.var(d, 0)
+
+
+class ManifoldShapRejectionSampling(ManifoldShap):
+
+    def sampling_estimate_new_version(self, j, f, x, X, nsamples=10):
+        """
+        Estimates \phi_j for point x, using ManifoldShap value function and rejection sampling procedure.
+        We estimate this using:
+        \phi_i \approx 1/n \sum_{k=1}^n ( v({j: \pi_k(j) ≤ \pi_k(i)}) - v({j: \pi_k(j) < \pi_k(i)}) ).
+        Here, \pi_k are all randomly chosen permutations of features {1, ..., d}, and are independent of each other.
+        And the value function is defined as:
+        v(S) = \E[f(x_S, X_{\bar{S}}) | (x_S, X_{\bar{S}}) \in manifold].
+        We use rejection sampling to estimate the value function here.
+        Works for version 0.41.0 of shap library
+        :param j: the feature for which shapley value is computed
+        :param f: the function
+        :param x: the datapoint for which Shapley value is computed
+        :param X: data to be used to compute expectations
+        :param nsamples: number of permutations to approximate Shapley values
+        :return: shapley value, and the variance.
+        """
+        if self.manifold(x) == 0:
+            raise ValueError("ManifoldShap undefined. The point x does not lie on manifold.")
+        if not np.equal(self.current_x, x).all():
+            self.probability_dict = {}
+            self.current_x = x
+        X_masked = self.X_masked[:nsamples * 2, :]
+        inds = np.arange(X.shape[1])
+        for i in range(0, nsamples):
+            np.random.shuffle(inds)
+            pos = np.where(inds == j)[0][0]
+            rind1 = np.random.randint(X.shape[0])
+            X_masked[i, :] = x
+            X_masked[i, inds[pos+1:]] = X[rind1, inds[pos+1:]]
+            rind2 = np.random.randint(X.shape[0])
+            X_masked[-(i+1), :] = x
+            X_masked[-(i+1), inds[pos:]] = X[rind2, inds[pos:]]
+
+        fun_evals = f(X_masked)
+        not_rejected = self.manifold(X_masked[:nsamples]).reshape(-1)*self.manifold(X_masked[nsamples:][::-1]).reshape(-1)
+        if len(fun_evals.shape) == 1:
+            fun_evals = fun_evals.reshape(-1, 1)
+        evals_on = fun_evals[:nsamples][not_rejected == 1, :]
+        evals_off = fun_evals[nsamples:][::-1][not_rejected == 1, :]
+        d = evals_on - evals_off
+
+        return np.mean(d, 0), np.var(d, 0)
