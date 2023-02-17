@@ -39,17 +39,13 @@ For each experiment, the parameters can be changed using the arguments provided 
 
 ### Off-manifold perturbation (regression) example
 To run the experiments with the perturbed model $g_\delta$ defined as:  
-$
-    g_\delta(x_1, x_2) \coloneqq x_1 + \delta\,x_2\,1((x_1,x_2) \notin \mathcal{P}_\alpha)
-$  
+$g_\delta(x_1, x_2) \coloneqq x_1 + \delta\,x_2\,1((x_1,x_2) \notin \mathcal{P}_\alpha)$  
 run the command:    
 ```python perturbation_experiment_with_different_dag.py```
 
 ### Off-manifold perturbation (classification) example
 To instead run the experiments with perturbed classifier model $g_\delta$ defined as:  
-$
-    g_\delta(x_1, x_2) \coloneqq 1(x_1 > 1/2, (x_1, x_2)\in \mathcal{P}_\alpha) + 1(x_1\,(1-\delta) > 1/2, (x_1,x_2) \notin \mathcal{P}_\alpha)
-$  
+$g_\delta(x_1, x_2) \coloneqq 1(x_1 > 1/2, (x_1, x_2)\in \mathcal{P}_\alpha) + 1(x_1\,(1-\delta) > 1/2, (x_1,x_2) \notin \mathcal{P}_\alpha)$  
 run the command:  
 ```python perturbation_off_manifold_main.py```
 
